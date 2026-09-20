@@ -1,0 +1,40 @@
+# Everything here is either rebuilt inside the image, specific to the Windows
+# development machine, or has no business in a production build context.
+
+# Rebuilt in the image
+node_modules
+.next
+out
+tsconfig.tsbuildinfo
+
+# Defensive. `.babelrc` has been deleted from the repository — Next falls back
+# to WASM SWC on the machine it was there for, so it was never needed — but its
+# mere presence forces the Babel transform, silently giving every production
+# build the slow path. Excluded so it cannot creep back in.
+.babelrc
+
+# Local HTTPS development: a self-signed certificate, its private key, and the
+# proxy that generates them. A dev cert must never reach a production image.
+.certs
+scripts/dev-https.mjs
+
+# Version control and editor state
+.git
+.gitignore
+.vscode
+.idea
+
+# Docs and deployment descriptors — not inputs to the build
+README.md
+DEPLOYMENT.md
+AGENTS.md
+CLAUDE.md
+Dockerfile
+.dockerignore
+compose.yaml
+docker-compose.yml
+
+# Local environment and logs
+.env*.local
+*.log
+npm-debug.log*

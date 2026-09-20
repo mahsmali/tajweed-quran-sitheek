@@ -1,0 +1,339 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================================
+   UNIFIED TAJWEED COLOUR CODE  —  single source of truth
+   Every glyph colour in the app resolves from exactly one of these six tokens.
+   Values are space-separated RGB triplets so Tailwind can apply alpha.
+   ========================================================================== */
+:root {
+  /* --- the five visual anchors ------------------------------------------ */
+  --tj-madd: 194 50 60; /* RED     — elongation: 2 / 4 / 5 / 6 counts     */
+  --tj-ghunnah: 14 122 82; /* GREEN   — nasalisation held in the khayshum    */
+  --tj-qalqalah: 29 91 214; /* BLUE    — echoed / bounced qalqalah letters    */
+  --tj-makharij: 150 80 15; /* ORANGE  — tafkheem vs tarqeeq (heavy / light)  */
+  --tj-silent: 121 116 108; /* GREY    — written but not pronounced           */
+  --tj-izhar: 27 24 21; /* INK     — clear pronunciation, no colouring    */
+
+  /* --- surface system ---------------------------------------------------- */
+  --tj-ink: 27 24 21;
+  --tj-muted: 111 106 98;
+  --tj-surface: 251 248 242;
+  --tj-raised: 255 255 255;
+  --tj-line: 232 225 213;
+  --tj-accent: 166 124 62;
+
+  --font-quran: 'KFGQPC Uthmanic Script HAFS', 'Al Majeed Quranic', 'Amiri Quran', serif;
+
+  /* Plus Jakarta Sans rather than Inter for the interface.
+     Inter is a grotesque built for maximum neutrality, which is exactly what
+     makes it fight this page: set beside a classical Uthmani face and an
+     editorial serif it reads as a dashboard. Jakarta is a humanist geometric —
+     rounder bowls, a warmer single-storey `a`, slightly more generous
+     apertures — so the UI voice sits with the Arabic instead of against it,
+     and it still holds up at the 11–12px label sizes this interface leans on. */
+  --font-ui: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+
+  /* Tamil and Sinhala need their own faces — no Latin face has glyphs for
+     either, so without this the whole interface falls back to a system default
+     and loses the type scale. The Latin face stays first for digits and Latin
+     fragments inside translated strings. */
+  --font-ui-ta: 'Plus Jakarta Sans', 'Noto Sans Tamil', ui-sans-serif, system-ui, sans-serif;
+  --font-ui-si: 'Plus Jakarta Sans', 'Noto Sans Sinhala', ui-sans-serif, system-ui, sans-serif;
+
+  /* The display voice — headings and pull quotes only. */
+  --font-display: 'Newsreader', Georgia, 'Times New Roman', serif;
+
+  color-scheme: light;
+}
+
+.dark {
+  --tj-madd: 255 116 124;
+  --tj-ghunnah: 53 214 155;
+  --tj-qalqalah: 122 168 255;
+  --tj-makharij: 245 168 90;
+  --tj-silent: 126 120 111;
+  --tj-izhar: 242 237 228;
+
+  --tj-ink: 242 237 228;
+  --tj-muted: 156 148 138;
+  --tj-surface: 20 17 14;
+  --tj-raised: 29 25 22;
+  --tj-line: 46 40 34;
+  --tj-accent: 217 177 113;
+
+  color-scheme: dark;
+}
+
+/* High-contrast mode: pushes every anchor to a >7:1 ratio and turns on the
+   redundant underline channel so colour is never the *only* signal. */
+.hc {
+  --tj-madd: 176 20 32;
+  --tj-ghunnah: 0 95 62;
+  --tj-qalqalah: 12 62 180;
+  --tj-makharij: 122 60 0;
+  --tj-silent: 90 86 80;
+}
+.dark.hc {
+  --tj-madd: 255 150 156;
+  --tj-ghunnah: 106 240 186;
+  --tj-qalqalah: 160 195 255;
+  --tj-makharij: 255 196 132;
+  --tj-silent: 154 148 139;
+}
+.hc [data-anchor]:not([data-anchor='none']) {
+  text-decoration-line: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 10px;
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  html {
+    scrollbar-color: rgb(var(--tj-line)) transparent;
+    scrollbar-width: thin;
+    /* Reserve the scrollbar's width always, so opening the word inspector —
+       which can make a short page scrollable — does not shift the whole
+       column sideways under the reader's finger. */
+    scrollbar-gutter: stable;
+  }
+  body {
+    background-color: rgb(var(--tj-surface));
+    /* One very soft warm wash under the masthead. Sized in pixels rather than
+       percentages because the body box is as tall as the document: a
+       percentage-positioned radial would stretch to something different on
+       every page length. */
+    background-image: radial-gradient(
+      1200px 460px at 50% -120px,
+      rgb(var(--tj-accent) / 0.1),
+      transparent 72%
+    );
+    background-repeat: no-repeat;
+    color: rgb(var(--tj-ink));
+    font-family: var(--font-ui);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  /* `lang` is set on <html> by useT once the stored locale hydrates. */
+  html[lang='ta'] body {
+    font-family: var(--font-ui-ta);
+  }
+  html[lang='si'] body {
+    font-family: var(--font-ui-si);
+  }
+  html[lang='ta'] {
+    --font-display: 'Noto Serif Tamil', 'Newsreader', Georgia, serif;
+  }
+  html[lang='si'] {
+    --font-display: 'Noto Serif Sinhala', 'Newsreader', Georgia, serif;
+  }
+  /* Indic scripts have tall ascenders and descenders; the tight leading that
+     suits Inter clips them. */
+  html[lang='ta'] body,
+  html[lang='si'] body {
+    line-height: 1.7;
+  }
+
+  /* The Tamil and Sinhala renderings of the hero sentence are far longer than
+     the English — at the English ceiling the headline grows to six lines and
+     shoves the video and the stats down the page. A lower ceiling per script
+     keeps the two hero columns roughly the same height in every language. */
+  html[lang='ta'] .hero-title,
+  html[lang='si'] .hero-title {
+    font-size: clamp(1.5rem, 3vw, 2.3rem);
+    line-height: 1.35;
+  }
+  ::selection {
+    background: rgb(var(--tj-accent) / 0.25);
+  }
+  :focus-visible {
+    outline: 2px solid rgb(var(--tj-accent));
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+@layer components {
+  /* The Arabic type block. `font-feature-settings` keeps the Uthmani marks
+     (06DF, 06E2, 0670 …) positioned rather than decomposed. */
+  .arabic {
+    font-family: var(--font-quran);
+    direction: rtl;
+    unicode-bidi: isolate;
+    font-variant-ligatures: common-ligatures contextual;
+    font-feature-settings: 'calt' 1, 'liga' 1, 'ccmp' 1, 'mark' 1, 'mkmk' 1;
+    letter-spacing: 0;
+    /* Uthmani marks stack well above and below the baseline — a line-height
+       under ~1.6 makes them collide with whatever sits on the next line.
+       A floor here; the ayah sizes in the Tailwind scale set their own. */
+    line-height: 1.7;
+  }
+
+  /* Headings. `opsz` lets Newsreader thin its serifs as it scales up, which is
+     the whole reason for choosing a variable optical-size face here. */
+  .display {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  /* The Noto serifs have no optical-size axis and run visually heavier, so
+     they need the tracking left alone. */
+  html[lang='ta'] .display,
+  html[lang='si'] .display {
+    letter-spacing: 0;
+    font-weight: 600;
+  }
+
+  /* The small caps label that sits above almost every heading in the app.
+     The short gold rule in front of it is what turns a stack of eyebrow +
+     title + paragraph into something that reads as a titled section: at
+     11px/0.16em the label alone is too quiet to mark where one section ends
+     and the next begins. */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-accent;
+  }
+  .eyebrow::before {
+    content: '';
+    flex: none;
+    width: 1.125rem;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, rgb(var(--tj-accent)), rgb(var(--tj-accent) / 0.2));
+  }
+
+  .panel {
+    background-color: rgb(var(--tj-raised));
+    border: 1px solid rgb(var(--tj-line));
+    border-radius: 1rem;
+    transition:
+      border-color 200ms ease,
+      box-shadow 200ms ease,
+      transform 200ms ease;
+  }
+
+  /* Opt-in hover response for panels that are themselves the target of a
+     click. Panels that merely contain controls do not get it — a card that
+     lifts under the pointer but does nothing when pressed is a lie. */
+  .panel-lift:hover {
+    transform: translateY(-2px);
+    border-color: rgb(var(--tj-accent) / 0.45);
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.04),
+      0 14px 34px -20px rgb(var(--tj-accent) / 0.55);
+  }
+
+  /* A hairline carrying one gold dot, between the major sections of a page.
+     The sections used to run together in a single column of panels; this is
+     what makes the titles read as a sequence of chapters. */
+  .section-rule {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .section-rule::before,
+  .section-rule::after {
+    content: '';
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, transparent, rgb(var(--tj-line)), transparent);
+  }
+
+  /* The hero's own light source, warmer and tighter than the page wash. */
+  .hero-glow::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(420px 260px at 88% -8%, rgb(var(--tj-accent) / 0.16), transparent 70%),
+      radial-gradient(380px 300px at -6% 108%, rgb(var(--tj-ghunnah) / 0.07), transparent 70%);
+  }
+
+  /* ── brand wordmark ──────────────────────────────────────────────────────
+     Set beside the monogram badge, carrying the artwork's two-tone voice in
+     live type: "Rahmah" green falling into gold, "Tajweed Engine" in silver
+     beneath it. Kept as text rather than baked into the image so it stays
+     sharp at any size, re-flows with the masthead, and is readable by anything
+     that reads the page rather than looks at it. */
+  .brand-word {
+    background-image: linear-gradient(
+      180deg,
+      rgb(58 206 146) 0%,
+      rgb(14 122 82) 55%,
+      rgb(198 158 90) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* Silver reads as silver on a dark ground and as fog on a cream one, so the
+     light theme gets solid ink instead of a gradient it cannot carry. */
+  .brand-sub {
+    color: rgb(var(--tj-ink));
+  }
+  .dark .brand-sub {
+    background-image: linear-gradient(180deg, #ffffff 0%, #cfc8bd 55%, #968f86 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* The two button voices, so a primary action looks the same on every screen. */
+  .btn-primary {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3 text-[13.5px] font-semibold text-white transition;
+    box-shadow: 0 10px 26px -14px rgb(var(--tj-accent) / 0.9);
+  }
+  .btn-primary:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active {
+    transform: translateY(0) scale(0.99);
+  }
+  .btn-ghost {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-line bg-raised px-5 py-3 text-[13.5px] font-semibold text-ink transition;
+  }
+  .btn-ghost:hover {
+    border-color: rgb(var(--tj-accent) / 0.6);
+    transform: translateY(-1px);
+  }
+  .btn-ghost:active {
+    transform: translateY(0) scale(0.99);
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium leading-none;
+  }
+
+  /* Subtle paper grain on the reading surface — keeps large areas of Arabic
+     type from feeling like it is floating on a flat white void. */
+  .paper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    background-image: radial-gradient(rgb(var(--tj-accent) / 0.07) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+}
+
+/* Wavesurfer container sizing */
+.ws-wrap ::part(wrapper) {
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

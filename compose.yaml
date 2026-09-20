@@ -1,0 +1,50 @@
+# Tajweed Engine — single service, no database.
+#
+# The app holds no state: every chapter is fetched from quran.com and analysed
+# per request, with the bundled Uthmani text in `src/lib/pipeline/seed.ts` as the
+# offline fallback. `db/schema.sql` is a published artefact of the data model,
+# not something this deployment runs. So there is nothing to persist and nothing
+# to back up — the container can be replaced at any moment.
+
+services:
+  tajweed:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tajweed-engine:latest
+    container_name: tajweed-engine
+    restart: unless-stopped
+
+    ports:
+      # Bound to localhost, not 0.0.0.0. Terminate TLS in front of this — see
+      # DEPLOYMENT.md — because the microphone in "Listen & repeat" needs a
+      # secure context, and a port published straight to the internet over plain
+      # http is the exact condition that silently disables it.
+      - '127.0.0.1:3000:3000'
+
+    environment:
+      NODE_ENV: production
+      # NEXT_PUBLIC_DEV_HTTPS_PORT / NEXT_PUBLIC_DEV_LAN_HOSTS are deliberately
+      # absent: they exist so `npm run dev:https` can tell the app where its
+      # local https proxy is. In production the site is already on https and the
+      # microphone notice correctly says nothing.
+
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+    # The app reaches out to api.quran.com, verses.quran.com,
+    # audio.qurancdn.com and everyayah.com. It never accepts inbound
+    # connections other than on 3000.
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'

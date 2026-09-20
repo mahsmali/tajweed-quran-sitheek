@@ -1,0 +1,45 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Must match the Worker name in the Cloudflare dashboard, or `wrangler
+  // deploy` creates a second Worker alongside the one you already named.
+  "name": "tajweed-quran-sitheek",
+
+  // Built by `opennextjs-cloudflare build`, not by hand. It wraps the Next
+  // server so it runs on workerd instead of Node.
+  "main": ".open-next/worker.js",
+
+  // Pinned to the workerd shipped with the wrangler in package-lock
+  // (1.20260918.1). A date NEWER than the runtime is rejected outright, so
+  // this moves only when wrangler does.
+  "compatibility_date": "2026-09-18",
+
+  // Required. Next's server touches Node built-ins — `node:buffer`,
+  // `node:stream`, `node:async_hooks` — that workerd only exposes behind this
+  // flag. Without it the Worker fails at import time, before any request.
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Everything Next prerendered: the home page, /quiz, /curriculum, the 30 day
+  // pages, /icon.png, and the contents of public/. Served straight from
+  // Cloudflare's edge without waking the Worker.
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+
+  // Worker logs in the dashboard. Off by default; a deployment with no
+  // observability is one you cannot debug when a chapter fails to load.
+  "observability": {
+    "enabled": true
+  }
+
+  // NOT configured, deliberately:
+  //
+  // • No KV/R2 incremental cache. `/api/chapter/[surah]` sets
+  //   `revalidate = 86400`, which without a cache binding simply means every
+  //   isolate fetches from quran.com on a miss — correct, just not shared
+  //   between them. See CLOUDFLARE.md to add R2 and make that cache global.
+  //
+  // • No `global_fetch_strictly_public`. It matters when a Worker fetches its
+  //   own public URL; here the only caller of /api/chapter is the browser, and
+  //   the server's own fetches all go to quran.com.
+}

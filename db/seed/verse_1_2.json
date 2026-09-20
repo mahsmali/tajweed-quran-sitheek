@@ -1,0 +1,164 @@
+{
+  "verse_key": "1:2",
+  "surah": 1,
+  "ayah": 2,
+  "text_uthmani": "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ",
+  "translation": "[All] praise is [due] to Allāh, Lord of the worlds -",
+  "engine_version": "1.4.0",
+  "audio": {
+    "verse_audio_url": "https://verses.quran.com/Alafasy/mp3/001002.mp3",
+    "reciter_id": 7,
+    "reciter_name": "Mishari Rashid al-Afasy",
+    "duration_ms": 5590,
+    "timing_source": "quran.com-segments"
+  },
+  "words": [
+    {
+      "id": "1:2:1",
+      "position": 1,
+      "text_uthmani": "ٱلْحَمْدُ",
+      "text_simple": "الحمد",
+      "audio_url": "https://audio.qurancdn.com/wbw/001_002_001.mp3",
+      "timing": {
+        "start_ms": 0,
+        "end_ms": 1486,
+        "source": "estimated"
+      },
+      "makharij": [
+        "jawf",
+        "lisan_hafa_adna",
+        "halq_awsat",
+        "shafatan_meem",
+        "lisan_tarf_nitaa"
+      ],
+      "rule_ids": [
+        "izhar_shafawi"
+      ],
+      "spans": [
+        {
+          "rule_id": "izhar_shafawi",
+          "family": "izhar",
+          "char_start": 5,
+          "char_end": 7,
+          "text": "مْ",
+          "counts": null,
+          "note": "مْ before د → close the lips and read it plainly."
+        }
+      ]
+    },
+    {
+      "id": "1:2:2",
+      "position": 2,
+      "text_uthmani": "لِلَّهِ",
+      "text_simple": "لله",
+      "audio_url": "https://audio.qurancdn.com/wbw/001_002_002.mp3",
+      "timing": {
+        "start_ms": 1486,
+        "end_ms": 2590,
+        "source": "estimated"
+      },
+      "makharij": [
+        "lisan_hafa_adna",
+        "halq_aqsa"
+      ],
+      "rule_ids": [
+        "lam_tarqeeq"
+      ],
+      "spans": [
+        {
+          "rule_id": "lam_tarqeeq",
+          "family": "makharij",
+          "char_start": 0,
+          "char_end": 5,
+          "text": "لِلَّ",
+          "counts": null,
+          "note": "The name of Allah after a kasra → the lam is read light."
+        }
+      ]
+    },
+    {
+      "id": "1:2:3",
+      "position": 3,
+      "text_uthmani": "رَبِّ",
+      "text_simple": "رب",
+      "audio_url": "https://audio.qurancdn.com/wbw/001_002_003.mp3",
+      "timing": {
+        "start_ms": 2590,
+        "end_ms": 3411,
+        "source": "estimated"
+      },
+      "makharij": [
+        "lisan_taraf_ra",
+        "shafatan_meem"
+      ],
+      "rule_ids": [
+        "ra_tafkheem"
+      ],
+      "spans": [
+        {
+          "rule_id": "ra_tafkheem",
+          "family": "makharij",
+          "char_start": 0,
+          "char_end": 2,
+          "text": "رَ",
+          "counts": null,
+          "note": "ر carries a fatha → read it heavy."
+        }
+      ]
+    },
+    {
+      "id": "1:2:4",
+      "position": 4,
+      "text_uthmani": "ٱلْعَـٰلَمِينَ",
+      "text_simple": "العلمين",
+      "audio_url": "https://audio.qurancdn.com/wbw/001_002_004.mp3",
+      "timing": {
+        "start_ms": 3411,
+        "end_ms": 5590,
+        "source": "estimated"
+      },
+      "makharij": [
+        "jawf",
+        "lisan_hafa_adna",
+        "halq_awsat",
+        "shafatan_meem",
+        "lisan_wasat",
+        "lisan_taraf_noon"
+      ],
+      "rule_ids": [
+        "hamzat_wasl",
+        "madd_tabee",
+        "madd_aarid"
+      ],
+      "spans": [
+        {
+          "rule_id": "hamzat_wasl",
+          "family": "silent",
+          "char_start": 0,
+          "char_end": 1,
+          "text": "ٱ",
+          "counts": null,
+          "note": "Hamzat al-wasl reached mid-flow → skip it and join straight to the next letter."
+        },
+        {
+          "rule_id": "madd_tabee",
+          "family": "madd",
+          "char_start": 3,
+          "char_end": 7,
+          "text": "عَـٰ",
+          "counts": 2,
+          "note": "Natural madd — hold for exactly 2 counts, no more and no less."
+        },
+        {
+          "rule_id": "madd_aarid",
+          "family": "madd",
+          "char_start": 11,
+          "char_end": 12,
+          "text": "ي",
+          "counts": 4,
+          "note": "Madd before the letter you stop on → 2, 4 or 6 counts; keep it consistent."
+        }
+      ]
+    }
+  ]
+}
