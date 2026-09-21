@@ -351,7 +351,11 @@ export const en = {
       'Generated analysis stays within mainstream classical Islamic understanding — a study aid only; not tafsīr, not fatwā.',
     sources:
       'Qur’anic text from the Uthmani muṣḥaf (api.quran.com) · tajweed marking per the standard colour-coded muṣḥaf scheme · audio streamed unaltered from licensed public sources · artwork is original symbolic line-work.',
-    createdBy: 'Created by FS LabsCo',
+    // Split so the studio name alone can carry the link — "Created by" is not
+    // part of it, and interpolating a placeholder would give no way to wrap
+    // just the name in an anchor.
+    createdBy: 'Created by',
+    studio: 'FS LabsCo',
     credit: 'Sitheek A HAMEED',
   },
 };

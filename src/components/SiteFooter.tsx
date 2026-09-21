@@ -4,6 +4,13 @@ import { Favicon } from '@/components/CreditRail';
 import { useT } from '@/lib/i18n/useT';
 
 /**
+ * The studio's site. Empty until someone supplies it — `StudioCredit` renders
+ * plain text rather than a dead or guessed link, so setting this one string is
+ * the whole change.
+ */
+const STUDIO_URL = '';
+
+/**
  * The provenance notice that closes every page.
  *
  * The build credit is NOT here — it lives in the left margin as `CreditRail`,
@@ -27,7 +34,7 @@ export function SiteFooter() {
           <p>
             {t.t('footer.sources')}{' '}
             <span className="not-italic font-semibold text-ink/80">
-              {t.t('footer.createdBy')}
+              {t.t('footer.createdBy')} <StudioCredit name={t.t('footer.studio')} />
             </span>
           </p>
         </div>
@@ -41,5 +48,30 @@ export function SiteFooter() {
         </p>
       </div>
     </footer>
+  );
+}
+
+/**
+ * The studio name, linked when there is somewhere to link to.
+ *
+ * `target="_blank"` needs `rel="noopener"` or the opened page gets a handle on
+ * this one through `window.opener`; `noreferrer` keeps the reader's path off
+ * the destination's analytics. The touch target is what makes this padded and
+ * `inline-block` — a 12.5px word is well under the 24px minimum a thumb needs,
+ * and the negative margin keeps that padding from opening a gap in the
+ * sentence it sits in.
+ */
+function StudioCredit({ name }: { name: string }) {
+  if (!STUDIO_URL) return <>{name}</>;
+
+  return (
+    <a
+      href={STUDIO_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="-my-1.5 inline-block rounded py-1.5 underline decoration-accent/40 underline-offset-[3px] transition hover:text-ink hover:decoration-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    >
+      {name}
+    </a>
   );
 }
