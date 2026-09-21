@@ -4,11 +4,10 @@ import { Favicon } from '@/components/CreditRail';
 import { useT } from '@/lib/i18n/useT';
 
 /**
- * The studio's site. Empty until someone supplies it — `StudioCredit` renders
- * plain text rather than a dead or guessed link, so setting this one string is
- * the whole change.
+ * The studio's site. Emptying this string is a supported state, not a bug:
+ * `StudioCredit` falls back to plain text rather than rendering a dead link.
  */
-const STUDIO_URL = '';
+const STUDIO_URL = 'https://fslabsco.com/';
 
 /**
  * The provenance notice that closes every page.
