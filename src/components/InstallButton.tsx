@@ -48,6 +48,17 @@ interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
 }
 
+/**
+ * Where the inline script in `layout.tsx` leaves the event it caught before
+ * this component existed. See the comment beside that script for why the
+ * listener here is not enough on its own.
+ */
+declare global {
+  interface Window {
+    __tjInstallPrompt?: BeforeInstallPromptEvent;
+  }
+}
+
 /** True once the app is running from the home screen rather than in a tab. */
 function isStandalone(): boolean {
   return (
@@ -112,10 +123,19 @@ export function InstallButton({ className }: { className: string }) {
       setMode('hidden');
       setOpen(false);
       setDeferred(null);
+      delete window.__tjInstallPrompt;
     };
 
     window.addEventListener('beforeinstallprompt', onBeforeInstall);
     window.addEventListener('appinstalled', onInstalled);
+
+    // It may already have fired and been caught in the head, in which case the
+    // listener above will never hear anything.
+    const early = window.__tjInstallPrompt;
+    if (early) {
+      setDeferred(early);
+      setMode('prompt');
+    }
 
     // Safari never fires the event, so the iOS branch is decided up front.
     if (isIOSSafari()) setMode('ios');
@@ -158,7 +178,9 @@ export function InstallButton({ className }: { className: string }) {
     }
     // Single-use either way: Chromium fires a fresh one on a later visit if
     // the app is still uninstalled, and `appinstalled` handles the other case.
+    // The stashed copy goes too, or a remount would replay a spent event.
     setDeferred(null);
+    delete window.__tjInstallPrompt;
     setMode('hidden');
   }, [deferred, mode]);
 

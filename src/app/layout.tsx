@@ -57,6 +57,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Noto+Sans+Tamil:wght@400;500;600;700&family=Noto+Serif+Tamil:wght@500;600;700&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Serif+Sinhala:wght@500;600;700&display=swap"
         />
+        {/*
+          Catch `beforeinstallprompt` before React exists.
+
+          Chromium fires it once, shortly after load, and does not re-fire it
+          for a listener that attached late. `InstallButton` attaches in an
+          effect — after the bundle has downloaded, parsed and hydrated, which
+          on a mid-range phone over a weak connection is comfortably long
+          enough to miss it. The symptom is the worst kind: the page works, the
+          install square simply never appears, and nothing anywhere says why.
+
+          Four lines in the document head cannot be late. They stash the event
+          on `window`, and the component reads it on mount if it was not there
+          to hear it live. `preventDefault` suppresses Chrome's own mini
+          infobar, which is the same thing the component would have done.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__tjInstallPrompt=e});",
+          }}
+        />
         <link rel="preconnect" href="https://api.quran.com" />
         <link rel="preconnect" href="https://verses.quran.com" />
         <link rel="preconnect" href="https://audio.qurancdn.com" />

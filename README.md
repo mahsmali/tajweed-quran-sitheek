@@ -189,10 +189,20 @@ self-signed certificate `start:https` generates is enough for `getUserMedia`
 once you accept the warning. It is *not* enough for a service worker: browsers
 refuse to register one on an origin with a certificate error, and "Advanced →
 Proceed" does not clear that. So `https://<lan-ip>:3001` gives a phone the
-microphone and no install button. To test installing on a real device, either
-trust that certificate on the device or deploy — see `CLOUDFLARE.md`. The
-script says so on startup rather than leaving you to infer it from an install
-square that never appears.
+microphone and no install button. The script says so on startup rather than
+leaving you to infer it from an install square that never appears.
+
+Three ways past it, in order of how much they cost:
+
+1. **Android Chrome, for a quick check.** Open `chrome://flags`, find
+   *Insecure origins treated as secure*, add `http://<lan-ip>:3000`, enable,
+   relaunch. Chrome then treats that plain-http origin as a secure context,
+   the worker registers and the install square appears. A testing flag, not a
+   fix — it only affects that one device.
+2. **Trust the certificate on the device.** Real, and fiddly on both platforms.
+3. **Deploy.** `npm run cf:deploy`, or the Docker path in `DEPLOYMENT.md`. A
+   genuine certificate is the only thing that makes this work on an iPhone,
+   and it is what real learners will be using anyway.
 
 ---
 
