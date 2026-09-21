@@ -338,6 +338,22 @@ export const en = {
     of: 'of',
     counts: 'counts',
   },
+
+  /**
+   * The provenance notice. Two sentences that do different jobs: the first
+   * bounds what the engine's output claims to be, the second says where every
+   * stream on the page came from. Both are attribution copy rather than UI
+   * text — if a locale leaves them untranslated the English stands, which is
+   * the usual convention for a notice of this kind.
+   */
+  footer: {
+    scope:
+      'Generated analysis stays within mainstream classical Islamic understanding — a study aid only; not tafsīr, not fatwā.',
+    sources:
+      'Qur’anic text from the Uthmani muṣḥaf (api.quran.com) · tajweed marking per the standard colour-coded muṣḥaf scheme · audio streamed unaltered from licensed public sources · artwork is original symbolic line-work.',
+    createdBy: 'Created by FS LabsCo',
+    credit: 'Sitheek A HAMEED',
+  },
 };
 
 /**

@@ -1,12 +1,16 @@
 import type { Metadata, Viewport } from 'next';
 import { Nav } from '@/components/Nav';
 import { MicAvailabilityNotice } from '@/components/MicAvailabilityNotice';
+import { SiteFooter } from '@/components/SiteFooter';
+import { CreditRail } from '@/components/CreditRail';
 import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Tajweed Engine — Word-by-Word Colour-Coded Qur’an',
   description:
     'An automated word-by-word Tajweed curriculum: character-level colour coding derived from the Uthmani script, millisecond-aligned recitation audio, and a 30-day mastery roadmap.',
+  // The same mark the footer credit carries, so the tab and the byline agree.
+  icons: { icon: '/famico.png', apple: '/famico.png' },
 };
 
 export const viewport: Viewport = {
@@ -42,11 +46,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-dvh antialiased">
         <Nav />
+        {/* Outside `main` on purpose: it is fixed to the viewport's left
+            margin, not part of any page's content column. */}
+        <CreditRail />
         {/* Wider than the old 6xl: at 1440px and up the reader was a column of
             panels down the middle with a third of the window left empty on
             either side, which is also what left no room for the controls rail
             the reader now keeps beside the verses. */}
-        <main className="mx-auto max-w-7xl px-4 pb-28 pt-6 sm:px-6">
+        {/* The bottom padding that used to clear the phone's fixed nav bar now
+            lives on the footer, which is what actually ends the page. Keeping
+            it here as well would open a screen of empty surface between the
+            last card and the notice. */}
+        <main className="mx-auto max-w-7xl px-4 pb-6 pt-6 sm:px-6 sm:pb-10">
           {/* Stated before anything else on the page, because on a phone the
               microphone is silently unavailable and the reason is the address
               in the URL bar — not something the learner can discover from the
@@ -54,6 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <MicAvailabilityNotice />
           {children}
         </main>
+        <SiteFooter />
       </body>
     </html>
   );
