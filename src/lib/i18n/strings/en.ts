@@ -338,6 +338,38 @@ export const en = {
     playAgain: 'Play again',
   },
 
+  /**
+   * The masthead install control, and the offline page.
+   *
+   * `label` is the control's whole voice — it is one square, with a tooltip
+   * and an accessible name and nothing else — so it has to say what tapping it
+   * does rather than merely naming the app.
+   *
+   * The iOS keys are the popover, which exists because Safari has no install
+   * API: the gesture has to be taught instead. "Add to Home Screen" is kept as
+   * a separate key because it is quoting a menu item Safari renders in English
+   * on many devices; a locale that ships a localised iOS translates it, and
+   * one that does not leaves it matching what the learner will actually see.
+   */
+  install: {
+    label: 'Install this app',
+    iosTitle: 'Add this to your Home Screen',
+    iosBody:
+      'Tap Share in Safari, then “Add to Home Screen”. It opens full screen after that, and keeps working with no connection.',
+    iosShareLabel: 'Share',
+    iosAddLabel: 'Add to Home Screen',
+  },
+
+  offline: {
+    eyebrow: 'No connection',
+    title: 'This screen hasn’t been saved to your device yet.',
+    body:
+      'Everything you have already opened is stored here and still works. Open this one once while you are online and it will be available offline from then on.',
+    retry: 'Try again',
+    reader: 'Go to the reader',
+    roadmap: 'Open the roadmap',
+  },
+
   common: {
     of: 'of',
     counts: 'counts',

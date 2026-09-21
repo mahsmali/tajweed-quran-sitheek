@@ -11,6 +11,37 @@ are kept here so the derived ones can be rebuilt.
 | `rahmah-logo.png` | nothing; the source for the dark one | original, opaque on black |
 | `rahmah-logo-light-source.png` | nothing; the source for the light one | original, opaque on white |
 | `famico.png` | the favicon, and the credit mark | 114 x 117 |
+| `icon-192.png` | the web app manifest | 192 x 192, badge + monogram |
+| `icon-512.png` | the web app manifest | 512 x 512, badge + monogram |
+| `icon-maskable-512.png` | the manifest, `purpose: maskable` | 512 x 512, full-bleed |
+| `sw.js` | the service worker, registered by `InstallPrompt` | not an asset; see the file |
+
+## The installed-app icons
+
+`famico.png` is already the right *shape* for a home-screen icon, and the wrong
+size for one: at 114 x 117 it would have to be upscaled 4.5x to fill the 512
+slot, which is the one place the icon is rendered biggest. So the badge is
+re-drawn at full size by `scripts/build-pwa-icons.ps1`, which keys the white
+canvas out of `rahmah-logo-light-source.png`, crops the ~634 x 542 monogram out
+of the lockup, and composites it over a drawn rounded rect in the same greens
+and gold.
+
+```powershell
+pwsh scripts/build-pwa-icons.ps1
+```
+
+Re-run it if the logo source is replaced. The crop box is measured, not
+hardcoded: the artwork has no blank column between the mark and the wordmark —
+drop shadows run right across the gap — so the script takes the *thinnest*
+column in the 25–40% band, where the gutter holds ~17 inked pixels against its
+neighbours' 300–400.
+
+Two purposes, two paddings. The `any` icons are the badge itself, corners and
+gold rim included, because Windows and desktop Chrome show that file verbatim.
+The maskable one is a full-bleed square with the mark pulled in to 56%, so the
+circle Android crops adaptive icons to never clips it — drawing the rounded
+badge there would leave the corners rounded twice over and the mark too small
+inside its own safe zone.
 
 ## Two lockups, one per theme
 

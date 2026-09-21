@@ -1,5 +1,10 @@
 /**
- * HTTPS in front of `next dev`, so a phone on the LAN can use the microphone.
+ * HTTPS in front of the Next server, so a phone on the LAN gets a secure
+ * origin. Two callers:
+ *
+ *   npm run dev:https     TLS in front of `next dev`    (the microphone)
+ *   npm run start:https   TLS in front of `next start`  (also the install
+ *                                                        button and offline)
  *
  * WHY THIS EXISTS
  * ---------------
@@ -7,6 +12,14 @@
  * specification, so "Listen & repeat" records fine on the machine running the
  * dev server — and silently cannot on a phone, which reaches the same server
  * at `http://192.168.x.x:3000`. No browser will offer the microphone there.
+ *
+ * The service worker is gated on exactly the same thing, so `--start` exists
+ * for the same reason one step further along: `InstallButton` registers the
+ * worker in production builds only (it caches `/_next/static/*`, which is what
+ * Fast Refresh needs live), so neither the install control nor offline mode
+ * can be exercised under `next dev` at all. See the caveat under "A phone"
+ * below — a self-signed certificate is enough for the microphone and is NOT
+ * enough for a service worker.
  *
  * The usual fix is `next dev --experimental-https`, which shells out to
  * `mkcert`. On this machine Application Control blocks mkcert exactly as it
@@ -39,6 +52,15 @@ const PASSPHRASE = 'tajweed-dev';
 
 const HTTPS_PORT = Number(process.env.HTTPS_PORT ?? 3001);
 const TARGET_PORT = Number(process.env.PORT ?? 3000);
+
+/**
+ * `--start` fronts the production server instead of the dev one.
+ *
+ * A CLI flag rather than an environment variable because `FOO=bar node ...`
+ * in an npm script does not work on Windows, and this is a Windows-first
+ * repository — see "Platform notes" in the README.
+ */
+const START = process.argv.includes('--start');
 
 /** Every IPv4 address this machine answers on, so the cert covers the phone's route in. */
 function lanAddresses() {
@@ -140,11 +162,19 @@ function waitForTarget(timeoutMs = 120_000) {
   });
 }
 
+// `next start` serves whatever `next build` left behind and says nothing
+// useful when there is nothing there, so the check happens here where the
+// remedy can be named.
+if (START && !existsSync(join(ROOT, '.next', 'BUILD_ID'))) {
+  console.error('[dev-https] no production build found — run `npm run build` first');
+  process.exit(1);
+}
+
 const hosts = ['localhost', '127.0.0.1', ...lanAddresses()];
 ensureCert(hosts);
 const pfx = readFileSync(PFX_PATH);
 
-// `next dev` runs as a child so one Ctrl-C stops both.
+// The Next server runs as a child so one Ctrl-C stops both.
 //
 // The two NEXT_PUBLIC_ variables are what let the *app* explain itself. A phone
 // that opened `http://<lan-ip>:3000` cannot record and cannot work out where to
@@ -152,13 +182,17 @@ const pfx = readFileSync(PFX_PATH);
 // the page can render the exact address as a tappable link rather than telling
 // the learner to go and read the terminal. Absent them the app falls back to
 // guessing `port + 1` and says out loud that it is guessing.
+//
+// They are passed in `--start` mode too, and do nothing there: `NEXT_PUBLIC_*`
+// is inlined at BUILD time, so a production bundle already holds whatever was
+// set when `next build` ran. The guess is `port + 1`, which is this proxy's
+// default port anyway, so the notice still points at the right address.
 const next = spawn(
   process.execPath,
   [
     '--max-old-space-size=2560',
     join(ROOT, 'node_modules', 'next', 'dist', 'bin', 'next'),
-    'dev',
-    '--webpack',
+    ...(START ? ['start'] : ['dev', '--webpack']),
     '-p',
     String(TARGET_PORT),
   ],
@@ -258,18 +292,35 @@ await waitForTarget();
 server.listen(HTTPS_PORT, () => {
   const lan = lanAddresses();
   console.log('');
-  console.log(`  ▲ https ready on :${HTTPS_PORT}  (microphone works here)`);
+  console.log(
+    `  ▲ https ready on :${HTTPS_PORT}  (fronting next ${START ? 'start' : 'dev'})`,
+  );
   console.log(`  - Local:    https://localhost:${HTTPS_PORT}`);
   for (const ip of lan) console.log(`  - Phone:    https://${ip}:${HTTPS_PORT}`);
   console.log('');
   console.log('  The certificate is self-signed, so the phone warns once:');
   console.log('  Advanced → Proceed. After that the microphone is available.');
   console.log('');
-  // The line `next dev` printed above this one is the wrong address for a
+  // The line the Next server printed above this one is the wrong address for a
   // phone, and it is the one people copy. Say so here rather than letting the
   // recorder fail silently on the device.
   console.log(`  ✗ Do NOT use http://<ip>:${TARGET_PORT} on a phone — plain http means`);
   console.log('    no microphone, in every browser. The app now says so on screen');
   console.log(`    and links to :${HTTPS_PORT}; http://<ip>:${HTTPS_PORT + 1} also redirects here.`);
   console.log('');
+  if (START) {
+    // Stated here because the failure is otherwise indistinguishable from the
+    // feature being broken: the page loads, the install square never appears,
+    // and nothing in the UI explains why.
+    console.log('  ⚠ Installing the app is a SEPARATE gate from the microphone.');
+    console.log('    Browsers refuse to register a service worker on an origin with a');
+    console.log('    certificate error, and "Advanced → Proceed" does not clear that.');
+    console.log(`    So on a phone, https://<ip>:${HTTPS_PORT} gives you the mic but no`);
+    console.log('    install button, unless you trust this certificate on the device.');
+    console.log('');
+    console.log(`    Where installing DOES work unchanged: https://localhost:${HTTPS_PORT}`);
+    console.log(`    and http://localhost:${TARGET_PORT} — localhost is a secure context by`);
+    console.log('    specification. For a real phone test, deploy (see CLOUDFLARE.md).');
+    console.log('');
+  }
 });

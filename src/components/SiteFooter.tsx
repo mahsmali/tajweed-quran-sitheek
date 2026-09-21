@@ -24,18 +24,31 @@ export function SiteFooter() {
   return (
     <footer className="mt-16 border-t border-line bg-raised/40">
       <div className="mx-auto max-w-7xl px-4 pb-24 pt-5 sm:px-6 sm:pb-6">
-        {/* The mark is sized to the notice beside it — `h-14` is the three
-            lines of `leading-relaxed` 12.5px text it stands against — so the
-            two read as one block rather than an icon with a caption. */}
-        <div className="flex items-start gap-4">
-          <Favicon className="mt-0.5 h-14 w-14" />
+        {/* From `sm` up the mark is sized to the notice beside it — `h-14` is
+            the three lines of `leading-relaxed` 12.5px text it stands against
+            — so the two read as one block rather than an icon with a caption.
+
+            On a phone that rule has nothing to hold on to: the same notice
+            wraps to eight or nine lines in 390px, so "as tall as the text" is
+            a 160px mark. It is sized to two lines of the phone's own 11px
+            instead, which keeps it a mark beside the notice rather than a
+            slab above it, and hands the width back to the type. */}
+        <div className="flex items-start gap-3 sm:gap-4">
+          <Favicon className="mt-0.5 h-9 w-9 sm:h-14 sm:w-14" />
 
           {/* No `max-w` and no margin between the paragraphs. Unconstrained,
               the notice runs the full width of the content column; flush, the
               gap between the two paragraphs is exactly one line-height — the
               same gap the wrapped lines inside each paragraph already have, so
-              the whole thing is one evenly-leaded block. */}
-          <div className="min-w-0 flex-1 text-[12.5px] italic leading-relaxed text-muted">
+              the whole thing is one evenly-leaded block.
+
+              11px below `sm`. This is attribution, not reading matter, and at
+              12.5px italic it was the largest block of text on a phone screen
+              — the last thing before the bottom bar, set bigger than the nav
+              labels above it. Dropping it a step-and-a-half puts it back in
+              the register a provenance notice belongs in without taking it
+              under the 11px floor where small print stops being legible. */}
+          <div className="min-w-0 flex-1 text-[11px] italic leading-relaxed text-muted sm:text-[12.5px]">
             <p>{t.t('footer.scope')}</p>
             <p>
               {t.t('footer.sources')}{' '}

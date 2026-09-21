@@ -291,6 +291,27 @@ export const si: DeepPartial<Strings> = {
     playAgain: 'නැවත ක්‍රීඩා කරන්න',
   },
 
+  install: {
+    label: 'මෙම යෙදුම ස්ථාපනය කරන්න',
+    iosTitle: 'මුල් තිරයට එක් කරන්න',
+    iosBody:
+      'Safari හි Share බොත්තම ස්පර්ශ කර, “Add to Home Screen” තෝරන්න. ඉන් පසු එය සම්පූර්ණ තිරයේ විවෘත වන අතර අන්තර්ජාලයක් නැතිවද ක්‍රියා කරයි.',
+    iosShareLabel: 'Share',
+    // Left in English for the same reason as the Tamil dictionary: it quotes
+    // the menu item Safari itself renders.
+    iosAddLabel: 'Add to Home Screen',
+  },
+
+  offline: {
+    eyebrow: 'සම්බන්ධතාවක් නැත',
+    title: 'මෙම තිරය තවම ඔබේ උපාංගයේ සුරැකී නැත.',
+    body:
+      'ඔබ දැනටමත් විවෘත කළ සියල්ල මෙහි සුරැකී ඇති අතර තවමත් ක්‍රියා කරයි. අන්තර්ජාලය ඇති විට මෙය වරක් විවෘත කළහොත්, ඉන් පසු එය නොබැඳිවද ලැබේ.',
+    retry: 'නැවත උත්සාහ කරන්න',
+    reader: 'කියවීමේ තිරයට යන්න',
+    roadmap: 'මාර්ග සිතියම විවෘත කරන්න',
+  },
+
   common: {
     of: '/',
     counts: 'ගණන්',

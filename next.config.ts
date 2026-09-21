@@ -36,6 +36,29 @@ const nextConfig: NextConfig = {
         source: '/api/:path((?!health).*)',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=0, s-maxage=86400' }],
       },
+      {
+        /**
+         * The service worker must never be served from a cache.
+         *
+         * Browsers re-fetch `/sw.js` to decide whether a new version exists,
+         * and `public/` is otherwise served with long-lived caching. Left
+         * alone, a deploy would ship a new worker that nobody's browser asks
+         * for — the old one keeps answering from the old caches, and the
+         * update is invisible until the HTTP cache happens to expire. This is
+         * the single header that makes the version bump in `sw.js` mean
+         * anything.
+         *
+         * `Service-Worker-Allowed` is what lets a worker served from any path
+         * claim the root scope; it registers at `/sw.js` today, so this is
+         * belt and braces rather than load-bearing.
+         */
+        source: '/sw.js',
+        headers: [
+          { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
+          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+          { key: 'Service-Worker-Allowed', value: '/' },
+        ],
+      },
     ];
   },
 };
