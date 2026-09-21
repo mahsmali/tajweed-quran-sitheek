@@ -79,12 +79,29 @@ and set:
 | Route | How it is served |
 |---|---|
 | `/`, `/quiz`, `/curriculum`, `/curriculum/1…30` | prerendered, served from Cloudflare's edge as static assets — the Worker never wakes |
-| `/icon.png`, `/rahmah-logo.png`, `/famico.png` | static assets |
+| `/icon.png`, `/rahmah-logo.png`, `/famico.png`, `/icon-*.png` | static assets |
+| `/offline` | prerendered; the page the service worker falls back to |
+| `/sw.js` | a static asset, with `no-store` forced by `public/_headers` |
+| `/manifest.webmanifest` | prerendered by `src/app/manifest.ts` |
 | `/api/chapter/[surah]` | the Worker: fetches quran.com and runs the Tajweed engine |
 | `/api/health` | the Worker, `no-store` |
 
 The 30 curriculum pages come from `generateStaticParams`, so the great majority
 of traffic costs no Worker invocation at all.
+
+### The one header that has to be said twice
+
+`headers()` in `next.config.ts` is applied by the Next **server**. Here the
+Worker never wakes for anything in `public/`, so the `no-store` rule that keeps
+`/sw.js` out of the HTTP cache cannot reach it — and without that rule a deploy
+ships a service worker nobody's browser ever asks for, leaving installed users
+on the previous build's caches indefinitely.
+
+`public/_headers` is the edge-side copy of that rule. Cloudflare reads it out of
+the assets directory and does not publish it. The standalone/Docker deployment
+is the mirror image — the Next server serves `public/`, `next.config.ts`
+applies, and `_headers` is inert — so **both files have to keep saying the same
+thing**. If you change one, change the other.
 
 ---
 

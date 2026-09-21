@@ -291,6 +291,28 @@ export const ta: DeepPartial<Strings> = {
     playAgain: 'மீண்டும் விளையாடு',
   },
 
+  install: {
+    label: 'இந்தச் செயலியை நிறுவுங்கள்',
+    iosTitle: 'முகப்புத் திரையில் சேர்க்கவும்',
+    iosBody:
+      'Safari-இல் Share பொத்தானைத் தட்டி, “Add to Home Screen” என்பதைத் தேர்வு செய்யுங்கள். அதன் பிறகு முழுத் திரையில் திறக்கும், இணையம் இல்லாமலும் இயங்கும்.',
+    iosShareLabel: 'Share',
+    // Left in English: this quotes the menu item Safari itself shows, and an
+    // iPhone whose language is Tamil is uncommon enough that a translated
+    // label would more often point at something the learner cannot find.
+    iosAddLabel: 'Add to Home Screen',
+  },
+
+  offline: {
+    eyebrow: 'இணைப்பு இல்லை',
+    title: 'இந்தத் திரை இன்னும் உங்கள் சாதனத்தில் சேமிக்கப்படவில்லை.',
+    body:
+      'நீங்கள் ஏற்கனவே திறந்தவை அனைத்தும் இங்கே சேமிக்கப்பட்டு இயங்குகின்றன. இணையம் உள்ளபோது இதை ஒரு முறை திறந்தால், அதன் பிறகு இணையம் இல்லாமலும் கிடைக்கும்.',
+    retry: 'மீண்டும் முயற்சி',
+    reader: 'வாசிப்புத் திரைக்குச் செல்',
+    roadmap: '30-நாள் வரைபடத்தைத் திற',
+  },
+
   common: {
     of: '/',
     counts: 'அளவுகள்',

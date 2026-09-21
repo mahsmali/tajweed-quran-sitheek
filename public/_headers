@@ -1,0 +1,22 @@
+# Cloudflare Workers Static Assets header rules.
+#
+# WHY THIS FILE EXISTS ALONGSIDE next.config.ts
+# ---------------------------------------------
+# `headers()` in next.config.ts is applied by the Next server. On Cloudflare
+# the contents of public/ are served by the ASSETS binding at the edge and the
+# Worker is never woken (see "What runs where" in CLOUDFLARE.md), so that rule
+# cannot reach /sw.js there. The Docker/standalone deployment is the opposite:
+# the Next server serves public/, so next.config.ts is what applies and this
+# file is inert — and, being an ordinary file in public/, is also readable at
+# /_headers there. It carries no secrets, so that costs nothing. Each
+# deployment needs its own copy of the same rule, and both have to say the
+# same thing.
+#
+# The rule itself: a service worker must never be served from a cache, or a
+# deploy ships a new worker that nobody's browser asks for — the old one keeps
+# answering from the old caches, and the VERSION bump inside sw.js means
+# nothing. Everything else in public/ keeps Cloudflare's defaults.
+
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+  Service-Worker-Allowed: /

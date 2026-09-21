@@ -10,6 +10,24 @@ export const metadata: Metadata = {
     'An automated word-by-word Tajweed curriculum: character-level colour coding derived from the Uthmani script, millisecond-aligned recitation audio, and a 30-day mastery roadmap.',
   // The same mark the footer credit carries, so the tab and the byline agree.
   icons: { icon: '/famico.png', apple: '/famico.png' },
+  /**
+   * Safari's home-screen behaviour is driven by meta tags, not by the
+   * manifest. `capable` is what turns "Add to Home Screen" from a bookmark
+   * that reopens in Safari with the address bar still there into something
+   * that launches on its own — the icon appears either way, and none of the
+   * app-like part of it does without this. Next emits it as the standard
+   * `mobile-web-app-capable` rather than the older `apple-` spelling, which
+   * WebKit has honoured since Safari 17.4.
+   *
+   * `default` for the status bar keeps it opaque and legible on the cream
+   * surface; `black-translucent` would slide the page up underneath it and put
+   * the masthead behind the clock.
+   */
+  appleWebApp: {
+    capable: true,
+    title: 'Tajweed',
+    statusBarStyle: 'default',
+  },
 };
 
 export const viewport: Viewport = {
