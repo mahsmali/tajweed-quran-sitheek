@@ -10,6 +10,8 @@ npm run test:audio      # 84 assertions on comparison logic + i18n wiring
 npm run check:alphabet  # verify 3:154 and 48:29 contain all 28 letters
 npm run dev         # http://localhost:3000
 npm run dev:https   # https://localhost:3001 — and https://<lan-ip>:3001, where a phone gets the microphone
+npm run build && npm run start:https   # the production build over both, which is what the installable
+                                       # app and offline mode need — see "Installable" below
 ```
 
 Deploying: **[CLOUDFLARE.md](CLOUDFLARE.md)** for Cloudflare Workers (`npm run cf:deploy`), or
@@ -169,10 +171,28 @@ square is not rendered and the masthead is exactly as it was.
 
 **Testing it.** The worker is registered in production builds only — it caches
 `/_next/static/*` first-hand, which is exactly the traffic Fast Refresh needs
-live. Use `npm run build && npm start`, on `localhost` or over the HTTPS dev
-proxy; a plain `http://<lan-ip>` origin is not a secure context and no browser
-will register a worker or offer an install there. It is the same constraint
-that governs the microphone — see "The phone case" below.
+live. So nothing here can be exercised under `next dev` at all:
+
+```bash
+npm run build
+npm start              # http://localhost:3000
+npm run start:https    # the same build, plus https://localhost:3001
+```
+
+`localhost` is a secure context by specification, so either works on the
+machine running it. A plain `http://<lan-ip>` origin is not, and no browser
+will register a worker or offer an install there — the same constraint that
+governs the microphone, see "The phone case" below.
+
+**A phone is the awkward one, and more awkward here than for the mic.** The
+self-signed certificate `start:https` generates is enough for `getUserMedia`
+once you accept the warning. It is *not* enough for a service worker: browsers
+refuse to register one on an origin with a certificate error, and "Advanced →
+Proceed" does not clear that. So `https://<lan-ip>:3001` gives a phone the
+microphone and no install button. To test installing on a real device, either
+trust that certificate on the device or deploy — see `CLOUDFLARE.md`. The
+script says so on startup rather than leaving you to infer it from an install
+square that never appears.
 
 ---
 
