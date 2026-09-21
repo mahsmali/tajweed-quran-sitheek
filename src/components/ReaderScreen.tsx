@@ -154,7 +154,7 @@ export function ReaderScreen({
           // room to spare. Kept ahead of the header rather than level with it:
           // at the original 76px the rail sat two pixels under the header, and
           // any growth in the brand block slid the controls behind it.
-          className="space-y-3.5 xl:col-start-2 xl:row-start-1 xl:sticky xl:top-[92px] xl:max-h-[calc(100dvh-114px)] xl:overflow-y-auto xl:pb-2"
+          className="space-y-3.5 xl:col-start-2 xl:row-start-1 xl:sticky xl:top-[104px] xl:max-h-[calc(100dvh-126px)] xl:overflow-y-auto xl:pb-2"
         >
           <div className="panel space-y-3 p-4">
             <p className="eyebrow">{t.t('reader.sourceGroup')}</p>

@@ -23,27 +23,34 @@ export function SiteFooter() {
 
   return (
     <footer className="mt-16 border-t border-line bg-raised/40">
-      <div className="mx-auto max-w-7xl px-4 pb-28 pt-8 sm:px-6 sm:pb-12">
-        {/* No margin between the two paragraphs: flush, the gap between them is
-            exactly one line-height — the same gap the wrapped lines inside each
-            paragraph already have. The notice then reads as one evenly-leaded
-            column instead of two blocks set at two different rhythms. */}
-        <div className="max-w-4xl text-[12.5px] italic leading-relaxed text-muted">
-          <p>{t.t('footer.scope')}</p>
-          <p>
-            {t.t('footer.sources')}{' '}
-            <span className="not-italic font-semibold text-ink/80">
-              {t.t('footer.createdBy')} <StudioCredit name={t.t('footer.studio')} />
-            </span>
-          </p>
+      <div className="mx-auto max-w-7xl px-4 pb-24 pt-5 sm:px-6 sm:pb-6">
+        {/* The mark is sized to the notice beside it — `h-14` is the three
+            lines of `leading-relaxed` 12.5px text it stands against — so the
+            two read as one block rather than an icon with a caption. */}
+        <div className="flex items-start gap-4">
+          <Favicon className="mt-0.5 h-14 w-14" />
+
+          {/* No `max-w` and no margin between the paragraphs. Unconstrained,
+              the notice runs the full width of the content column; flush, the
+              gap between the two paragraphs is exactly one line-height — the
+              same gap the wrapped lines inside each paragraph already have, so
+              the whole thing is one evenly-leaded block. */}
+          <div className="min-w-0 flex-1 text-[12.5px] italic leading-relaxed text-muted">
+            <p>{t.t('footer.scope')}</p>
+            <p>
+              {t.t('footer.sources')}{' '}
+              <span className="not-italic font-semibold text-ink/80">
+                {t.t('footer.createdBy')} <StudioCredit name={t.t('footer.studio')} />
+              </span>
+            </p>
+          </div>
         </div>
 
-        {/* The rail's content, horizontally, for the widths that have no rail. */}
-        <p className="mt-5 flex items-center gap-2 min-[1392px]:hidden">
-          <Favicon />
-          <span className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted">
-            {t.t('footer.credit')}
-          </span>
+        {/* The rail's name, horizontally, for the widths that have no rail.
+            No mark on it — the one beside the notice above is already this
+            block's mark, and repeating it would set the favicon twice. */}
+        <p className="mt-4 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted min-[1392px]:hidden">
+          {t.t('footer.credit')}
         </p>
       </div>
     </footer>

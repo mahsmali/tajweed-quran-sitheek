@@ -405,13 +405,17 @@ function GlobeIcon() {
  * THE BLACK FIELD
  * ---------------
  * The artwork has no transparency — it is drawn on a solid black canvas. On the
- * dark theme that vanishes into the surface, but on the cream one it would be a
- * hard black rectangle in the corner of the page. Rather than key the black out
- * (the monogram's own tower and outlines are near-black too, so a colour key
- * would punch holes straight through the artwork) the canvas is rounded and
- * given a hairline, which turns the thing the file already is into a deliberate
- * badge that reads the same in both themes. A transparent PNG would let this
- * drop away — see `public/README.md`.
+ * dark theme that vanishes into the surface, but on the cream one it is a hard
+ * black rectangle in the corner of the page. Keying the black out is not an
+ * option (the monogram's own tower and outlines are near-black too, so a colour
+ * key punches holes straight through the artwork), so the canvas is rounded to
+ * soften what the file already is.
+ *
+ * The hairline that used to trace those corners is gone by request. It was
+ * doing real work on the cream theme — drawing the edge deliberately rather
+ * than letting it read as an accident — so if the black rectangle ever starts
+ * to look wrong in light mode, `ring-1 ring-line` is what to put back. A
+ * transparent PNG would settle it properly; see `public/README.md`.
  *
  * FALLBACK
  * --------
@@ -471,11 +475,19 @@ function Brand() {
         height={157}
         decoding="async"
         onError={() => setFailed(true)}
-        className="h-[34px] w-auto rounded-md ring-1 ring-line sm:h-[40px]"
+        className="h-[44px] w-auto rounded-md sm:h-[52px]"
       />
       {/* Shown at every width now: with the three destinations moved to the
-          bottom bar, the masthead finally has room for it on a phone. */}
-      <span className="mt-1.5 block text-[9.5px] leading-none text-muted sm:text-[10px]">
+          bottom bar, the masthead finally has room for it on a phone.
+
+          Sized to run the width of the logo above it rather than justified to
+          it. `text-align-last: justify` does stretch a single line, but it can
+          only do so by opening the word spaces, and on a two-word tagline that
+          is one conspicuous hole in the middle rather than a set line. Type
+          size reaches the same width with the words still touching: the lockup
+          is ~3.3 : 1, so 52px of height is ~172px across, which 12.5px of this
+          face fills almost exactly. */}
+      <span className="mt-1.5 block text-[10.5px] leading-none text-muted sm:text-[12.5px]">
         {t.t('nav.tagline')}
       </span>
     </span>

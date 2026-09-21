@@ -15,20 +15,21 @@ follow, so a file of any proportion keeps the masthead on one line:
 
 | | Phone | `sm` and up |
 |---|---|---|
-| Height | 34px | 40px |
-| Width at the current 3.3 : 1 | ~112px | ~132px |
-| Resulting header height | 71px | 81px |
+| Height | 44px | 52px |
+| Width at the current 3.3 : 1 | ~145px | ~172px |
+| Resulting header height | 81px | 93px |
 
-The reader's sticky control rail is offset to 92px to clear it. If you change
-the logo height, check `xl:top-[92px]` in `src/components/ReaderScreen.tsx`.
+The reader's sticky control rail is offset to 104px to clear it. If you change
+the logo height, check `xl:top-[104px]` in `src/components/ReaderScreen.tsx`.
 
 ### What the current file is, and what would be better
 
 The file in place is **517 x 157, fully opaque, drawn on a solid black canvas**.
 That disappears into the dark theme, but on the cream one a black rectangle in
-the corner of the page is not what anyone intended — so the canvas is rounded
-and given a hairline, which turns it into a deliberate badge rather than an
-accident. It reads correctly in both themes.
+the corner of the page is not what anyone intended — so the canvas is rounded to
+soften it. The hairline that used to trace those corners was removed by request;
+`ring-1 ring-line` in `Brand` is what to put back if the edge starts to read as
+an accident in light mode.
 
 Two changes to the artwork would let that treatment drop away:
 
