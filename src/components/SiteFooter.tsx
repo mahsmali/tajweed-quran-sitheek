@@ -12,11 +12,11 @@ const STUDIO_URL = 'https://fslabsco.com/';
 /**
  * The provenance notice that closes every page.
  *
- * The build credit is NOT here — it lives under the masthead controls as
- * `MastheadCredit`. What this component keeps is the fallback: below `sm` the
- * masthead has no room, so the same credit is set as an ordinary line under
- * the notice. The two visibility rules are exact complements, so the credit
- * appears once and only once at every width.
+ * The build credit is NOT here and has no fallback here either — it lives in
+ * the masthead as `MastheadCredit`, at every width including phones. This
+ * component used to carry a copy of it for the widths the masthead skipped;
+ * with the masthead covering all of them, a copy would simply be the credit
+ * twice on one screen.
  */
 export function SiteFooter() {
   const t = useT();
@@ -46,13 +46,6 @@ export function SiteFooter() {
           </div>
         </div>
 
-        {/* Below `sm` the masthead has no room for `MastheadCredit`, so the
-            credit appears here instead. No mark on it — the one beside the
-            notice above is already this block's mark, and repeating it would
-            set the favicon twice on one screen. */}
-        <p className="mt-4 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted sm:hidden">
-          {t.t('footer.credit')}
-        </p>
       </div>
     </footer>
   );

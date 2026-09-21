@@ -408,8 +408,14 @@ function GlobeIcon() {
  * A wide lockup that already contains the words "Rahmah Tajweed Engine", so it
  * replaces the dots AND the wordmark that used to sit beside them — keeping
  * both would have set the brand name twice. It is pinned by HEIGHT and left to
- * work out its own width: 44px on a phone, 52px from `sm` up, which is about
- * 158px and 187px across.
+ * work out its own width: 36px, 44px and 52px, which is about 130px, 158px and
+ * 187px across.
+ *
+ * The 36px step exists for 320px phones and nothing else. The controls on the
+ * other side of the masthead need 144px, which leaves 136px for the lockup —
+ * at 44px it wants 158px, and the progress ring ends up sitting on top of the
+ * monogram. `min-[400px]` rather than a named breakpoint because that is where
+ * the arithmetic actually turns over, not where Tailwind happens to put one.
  *
  * ONE LOCKUP PER THEME
  * --------------------
@@ -499,7 +505,7 @@ function Brand() {
         height={142}
         decoding="async"
         onError={() => setFailed(true)}
-        className="hidden h-[44px] w-auto sm:h-[52px] dark:block"
+        className="hidden h-[36px] w-auto min-[400px]:h-[44px] sm:h-[52px] dark:block"
       />
       {/* eslint-disable-next-line @next/next/no-img-element -- see above */}
       <img
@@ -510,7 +516,7 @@ function Brand() {
         height={166}
         decoding="async"
         onError={() => setFailed(true)}
-        className="block h-[44px] w-auto sm:h-[52px] dark:hidden"
+        className="block h-[36px] w-auto min-[400px]:h-[44px] sm:h-[52px] dark:hidden"
       />
       {/* Shown at every width now: with the three destinations moved to the
           bottom bar, the masthead finally has room for it on a phone.
@@ -521,8 +527,9 @@ function Brand() {
           is one conspicuous hole in the middle rather than a set line. Type
           size reaches the same width with the words still touching: trimmed,
           the lockup is ~3.6 : 1, so 52px of height is ~187px across, which
-          13.5px of this face fills almost exactly. */}
-      <Tagline className="mt-1.5 block text-[11.5px] leading-none sm:text-[13.5px]" />
+          13.5px of this face fills almost exactly. The two smaller steps track
+          the two smaller logo heights for the same reason. */}
+      <Tagline className="mt-1.5 block text-[9.5px] leading-none min-[400px]:text-[11.5px] sm:text-[13.5px]" />
     </span>
   );
 }
