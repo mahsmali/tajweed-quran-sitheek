@@ -13,18 +13,24 @@ import { useT } from '@/lib/i18n/useT';
  * the brand lockup is two lines tall, the controls beside it are one, and this
  * fills the gap under them.
  *
- * Hidden below `sm`, where the masthead has no room to spare at all and
- * `SiteFooter` carries the same line instead.
+ * Shown at EVERY width, phones included. It costs no extra masthead width to
+ * do so: it sits under the controls row, which is wider than it is, so the
+ * masthead is no harder to fit at 390px than it was without it. Tracking and
+ * type size step down slightly below `sm` to keep that true on the narrowest
+ * phones.
  */
 export function MastheadCredit() {
   const t = useT();
 
   return (
-    <span className="hidden items-center gap-2 sm:flex">
-      <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted">
+    <span className="flex items-center gap-1.5 sm:gap-2">
+      {/* Never wrapped. At 320px the name is the widest thing in this column,
+          and allowed to break it puts "HAMEED" on its own line and strands the
+          mark out to the right of both. */}
+      <span className="whitespace-nowrap text-[9px] font-semibold uppercase tracking-[0.12em] text-muted sm:text-[10px] sm:tracking-[0.16em]">
         {t.t('footer.credit')}
       </span>
-      <Favicon className="h-[18px] w-[18px]" />
+      <Favicon className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
     </span>
   );
 }
