@@ -2,7 +2,11 @@
 export const en = {
   nav: {
     brand: 'Tajweed Engine',
-    tagline: 'Word-by-word, colour-coded',
+    // Split so the second half can be set in the five anchor colours — the
+    // masthead then demonstrates the thing the app does. Every locale needs
+    // both halves; the comma belongs to the lead.
+    taglineLead: 'Word-by-word,',
+    taglineAccent: 'colour-coded',
     reader: 'Reader',
     curriculum: '30-Day Roadmap',
     quiz: 'Find the Rule',
@@ -337,6 +341,26 @@ export const en = {
   common: {
     of: 'of',
     counts: 'counts',
+  },
+
+  /**
+   * The provenance notice. Two sentences that do different jobs: the first
+   * bounds what the engine's output claims to be, the second says where every
+   * stream on the page came from. Both are attribution copy rather than UI
+   * text — if a locale leaves them untranslated the English stands, which is
+   * the usual convention for a notice of this kind.
+   */
+  footer: {
+    scope:
+      'Generated analysis stays within mainstream classical Islamic understanding — a study aid only; not tafsīr, not fatwā.',
+    sources:
+      'Qur’anic text from the Uthmani muṣḥaf (api.quran.com) · tajweed marking per the standard colour-coded muṣḥaf scheme · audio streamed unaltered from licensed public sources · artwork is original symbolic line-work.',
+    // Split so the studio name alone can carry the link — "Created by" is not
+    // part of it, and interpolating a placeholder would give no way to wrap
+    // just the name in an anchor.
+    createdBy: 'Created by',
+    studio: 'FS LabsCo',
+    credit: 'Sitheek A HAMEED',
   },
 };
 

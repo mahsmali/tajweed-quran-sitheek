@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useSpring } from 'framer-motion';
+import { MastheadCredit } from '@/components/BrandCredit';
 import { useReaderStore } from '@/store/useReaderStore';
 import { useLocaleStore } from '@/store/useLocaleStore';
 import { useProgressStore, completedCount } from '@/store/useProgressStore';
@@ -45,7 +46,12 @@ export function Nav() {
             to know it was there. The row still cannot push the page wider,
             because the Tamil and Sinhala labels are half again as long as the
             English. */}
-        <nav className="ml-auto hidden min-w-0 items-center gap-1 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] sm:flex [&::-webkit-scrollbar]:hidden">
+        {/* The controls and the credit share a column so the credit lands in
+            space the masthead already wastes: the brand lockup is two lines
+            tall, this row is one, and the credit fills the gap beneath it. */}
+        <div className="ml-auto flex min-w-0 flex-col items-end gap-1.5">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+        <nav className="hidden min-w-0 items-center gap-1 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] sm:flex [&::-webkit-scrollbar]:hidden">
           {links.map((l) => {
             const active = l.href === '/' ? pathname === '/' : pathname.startsWith(l.href);
             return (
@@ -76,7 +82,7 @@ export function Nav() {
         <Link
           href="/curriculum"
           title={`${done}/30 ${t.t('nav.progressLabel')}`}
-          className="ml-auto flex shrink-0 items-center gap-2 rounded-full border border-line bg-raised px-2 py-1.5 transition hover:border-accent/50 sm:ml-0 sm:px-3"
+          className="flex shrink-0 items-center gap-2 rounded-full border border-line bg-raised px-2 py-1.5 transition hover:border-accent/50 sm:px-3"
         >
           <ProgressRing done={done} total={30} />
           <span className="hidden text-[11px] font-semibold tabular-nums text-muted sm:inline">
@@ -86,6 +92,10 @@ export function Nav() {
 
         <LanguagePicker />
         <ThemeToggle label={t.t('nav.toggleDark')} />
+        </div>
+
+        <MastheadCredit />
+        </div>
       </div>
 
       <ScrollProgress />
@@ -395,23 +405,25 @@ function GlobeIcon() {
  *
  * SIZING
  * ------
- * `public/rahmah-logo.png` is a wide lockup (517 x 157, about 3.3 : 1) that
- * already contains the words "Rahmah Tajweed Engine", so it replaces the dots
- * AND the wordmark that used to sit beside them — keeping both would have set
- * the brand name twice. It is pinned by HEIGHT and left to work out its own
- * width: 30px on a phone, 34px from `sm` up, which is about 99px and 112px
- * across.
+ * A wide lockup that already contains the words "Rahmah Tajweed Engine", so it
+ * replaces the dots AND the wordmark that used to sit beside them — keeping
+ * both would have set the brand name twice. It is pinned by HEIGHT and left to
+ * work out its own width: 44px on a phone, 52px from `sm` up, which is about
+ * 158px and 187px across.
  *
- * THE BLACK FIELD
- * ---------------
- * The artwork has no transparency — it is drawn on a solid black canvas. On the
- * dark theme that vanishes into the surface, but on the cream one it would be a
- * hard black rectangle in the corner of the page. Rather than key the black out
- * (the monogram's own tower and outlines are near-black too, so a colour key
- * would punch holes straight through the artwork) the canvas is rounded and
- * given a hairline, which turns the thing the file already is into a deliberate
- * badge that reads the same in both themes. A transparent PNG would let this
- * drop away — see `public/README.md`.
+ * ONE LOCKUP PER THEME
+ * --------------------
+ * Two files, because one cannot do both jobs. "Tajweed Engine" is set in a
+ * metallic gradient, and a gradient that reads on black is close to invisible
+ * on cream — which is exactly what happened when the dark artwork was keyed
+ * transparent and shown on the light theme. So the dark theme keeps the
+ * original, and the light theme uses the artwork drawn for it, with that line
+ * in dark metal.
+ *
+ * Both arrive on an opaque canvas — black and white respectively — and both are
+ * keyed and trimmed by `scripts/key-logo-background.ps1`. The originals are
+ * kept beside them as sources. See `public/README.md` for why the key is a
+ * border flood fill and not a colour key.
  *
  * FALLBACK
  * --------
@@ -423,6 +435,7 @@ function Brand() {
   const t = useT();
   const [failed, setFailed] = useState(false);
   const imgRef = useRef<HTMLImageElement | null>(null);
+  const lightRef = useRef<HTMLImageElement | null>(null);
 
   /**
    * `onError` alone is not enough here.
@@ -433,10 +446,14 @@ function Brand() {
    * false, and the header keeps a broken image forever. Re-checking the decoded
    * state once on mount catches exactly that case: an image that has finished
    * loading with no intrinsic width did not load at all.
+   *
+   * Both files are checked. Either one missing drops the whole lockup to the
+   * type fallback — a theme that silently shows a broken image is worse than a
+   * wordmark in both.
    */
   useEffect(() => {
-    const el = imgRef.current;
-    if (el?.complete && el.naturalWidth === 0) setFailed(true);
+    const dead = (el: HTMLImageElement | null) => el?.complete && el.naturalWidth === 0;
+    if (dead(imgRef.current) || dead(lightRef.current)) setFailed(true);
   }, []);
 
   if (failed) {
@@ -450,9 +467,7 @@ function Brand() {
           <span className="brand-sub mt-[3px] block text-[10px] font-extrabold uppercase leading-none tracking-[0.09em] sm:text-[11.5px]">
             Tajweed Engine
           </span>
-          <span className="mt-1.5 block text-[9.5px] leading-none text-muted sm:text-[10px]">
-            {t.t('nav.tagline')}
-          </span>
+          <Tagline className="mt-1.5 block text-[9.5px] leading-none sm:text-[10px]" />
         </span>
       </span>
     );
@@ -460,24 +475,108 @@ function Brand() {
 
   return (
     <span className="flex flex-col items-start leading-none">
+      {/* Two files, one per theme, swapped in CSS rather than in JS — the
+          theme class is on <html> before React hydrates, so a JS swap would
+          flash the wrong lockup on first paint. Both are in the DOM and both
+          load; `hidden` does not stop a fetch. That doubled cost is why the
+          light file is downscaled to 600px rather than shipped at the 1956px
+          it was delivered at — 1.5MB on every page load, for something drawn
+          at 187px, to show half the time.
+
+          Both files are TRIMMED TO CONTENT (see scripts/key-logo-background.ps1
+          -Trim), which is what lets a single height class size them the same:
+          3.58 : 1 and 3.62 : 1 after trimming, so 52px of height is ~186px and
+          ~188px across. Untrimmed they padded their artwork differently and the
+          same box rendered two visibly different logos. */}
       {/* eslint-disable-next-line @next/next/no-img-element -- a fixed-height
           brand lockup with a runtime fallback; next/image would hard-error on a
           missing file and gives nothing back for an asset this small. */}
       <img
         ref={imgRef}
-        src="/rahmah-logo.png"
+        src="/rahmah-logo-transparent.png"
         alt={t.t('nav.brand')}
-        width={517}
-        height={157}
+        width={508}
+        height={142}
         decoding="async"
         onError={() => setFailed(true)}
-        className="h-[34px] w-auto rounded-md ring-1 ring-line sm:h-[40px]"
+        className="hidden h-[44px] w-auto sm:h-[52px] dark:block"
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element -- see above */}
+      <img
+        ref={lightRef}
+        src="/rahmah-logo-light.png"
+        alt={t.t('nav.brand')}
+        width={600}
+        height={166}
+        decoding="async"
+        onError={() => setFailed(true)}
+        className="block h-[44px] w-auto sm:h-[52px] dark:hidden"
       />
       {/* Shown at every width now: with the three destinations moved to the
-          bottom bar, the masthead finally has room for it on a phone. */}
-      <span className="mt-1.5 block text-[9.5px] leading-none text-muted sm:text-[10px]">
-        {t.t('nav.tagline')}
-      </span>
+          bottom bar, the masthead finally has room for it on a phone.
+
+          Sized to run the width of the logo above it rather than justified to
+          it. `text-align-last: justify` does stretch a single line, but it can
+          only do so by opening the word spaces, and on a two-word tagline that
+          is one conspicuous hole in the middle rather than a set line. Type
+          size reaches the same width with the words still touching: trimmed,
+          the lockup is ~3.6 : 1, so 52px of height is ~187px across, which
+          13.5px of this face fills almost exactly. */}
+      <Tagline className="mt-1.5 block text-[11.5px] leading-none sm:text-[13.5px]" />
+    </span>
+  );
+}
+
+/**
+ * The tagline, with its second half set in the anchor colours.
+ *
+ * The masthead then does the thing the app claims to do, on the two words that
+ * claim it. The palette is the reader's own — madd, ghunnah, qalqalah,
+ * makharij, accent — cycled per character. `silent` is left out on purpose:
+ * it is grey, which at this size would read as a gap in the word rather than
+ * as a colour.
+ *
+ * WHY GRAPHEMES, NOT CHARACTERS
+ * -----------------------------
+ * Tamil and Sinhala write this phrase with combining marks — `சொ` is three
+ * code points, `වර්` is four. Splitting on code points would tear a mark off
+ * its base and paint the two halves different colours, which in those scripts
+ * is not a stylistic choice but a broken word. `Intl.Segmenter` groups by
+ * grapheme cluster, so a base and everything that hangs off it stay one unit
+ * and take one colour. The `Array.from` fallback splits by code point, which
+ * is wrong for those scripts but only reachable on engines that predate the
+ * Segmenter — and it is still better than throwing.
+ */
+const ANCHORS = ['text-madd', 'text-ghunnah', 'text-qalqalah', 'text-makharij', 'text-accent'];
+
+function graphemes(s: string): string[] {
+  if (typeof Intl !== 'undefined' && 'Segmenter' in Intl) {
+    const seg = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
+    return Array.from(seg.segment(s), (g) => g.segment);
+  }
+  return Array.from(s);
+}
+
+function Tagline({ className }: { className?: string }) {
+  const t = useT();
+  const lead = t.t('nav.taglineLead');
+  const accent = t.t('nav.taglineAccent');
+
+  let i = 0;
+  return (
+    <span className={className}>
+      <span className="text-muted">{lead} </span>
+      {graphemes(accent).map((g, n) => {
+        // Spaces take no colour, and must not advance the cycle either — an
+        // invisible step would break the run of colours either side of them.
+        if (g.trim() === '') return <span key={n}>{g}</span>;
+        const cls = ANCHORS[i++ % ANCHORS.length];
+        return (
+          <span key={n} className={`${cls} font-semibold`}>
+            {g}
+          </span>
+        );
+      })}
     </span>
   );
 }

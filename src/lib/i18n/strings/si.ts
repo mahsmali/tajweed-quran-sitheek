@@ -13,7 +13,8 @@ import type { Strings } from './en';
 export const si: DeepPartial<Strings> = {
   nav: {
     brand: 'තජ්වීද් එන්ජිම',
-    tagline: 'වචනයෙන් වචනය, වර්ණ කේතගත',
+    taglineLead: 'වචනයෙන් වචනය,',
+    taglineAccent: 'වර්ණ කේතගත',
     reader: 'කියවීම',
     curriculum: 'දින 30 මාවත',
     quiz: 'නියමය සොයන්න',
