@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useSpring } from 'framer-motion';
+import { MastheadCredit } from '@/components/BrandCredit';
 import { useReaderStore } from '@/store/useReaderStore';
 import { useLocaleStore } from '@/store/useLocaleStore';
 import { useProgressStore, completedCount } from '@/store/useProgressStore';
@@ -45,7 +46,12 @@ export function Nav() {
             to know it was there. The row still cannot push the page wider,
             because the Tamil and Sinhala labels are half again as long as the
             English. */}
-        <nav className="ml-auto hidden min-w-0 items-center gap-1 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] sm:flex [&::-webkit-scrollbar]:hidden">
+        {/* The controls and the credit share a column so the credit lands in
+            space the masthead already wastes: the brand lockup is two lines
+            tall, this row is one, and the credit fills the gap beneath it. */}
+        <div className="ml-auto flex min-w-0 flex-col items-end gap-1.5">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+        <nav className="hidden min-w-0 items-center gap-1 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] sm:flex [&::-webkit-scrollbar]:hidden">
           {links.map((l) => {
             const active = l.href === '/' ? pathname === '/' : pathname.startsWith(l.href);
             return (
@@ -76,7 +82,7 @@ export function Nav() {
         <Link
           href="/curriculum"
           title={`${done}/30 ${t.t('nav.progressLabel')}`}
-          className="ml-auto flex shrink-0 items-center gap-2 rounded-full border border-line bg-raised px-2 py-1.5 transition hover:border-accent/50 sm:ml-0 sm:px-3"
+          className="flex shrink-0 items-center gap-2 rounded-full border border-line bg-raised px-2 py-1.5 transition hover:border-accent/50 sm:px-3"
         >
           <ProgressRing done={done} total={30} />
           <span className="hidden text-[11px] font-semibold tabular-nums text-muted sm:inline">
@@ -86,6 +92,10 @@ export function Nav() {
 
         <LanguagePicker />
         <ThemeToggle label={t.t('nav.toggleDark')} />
+        </div>
+
+        <MastheadCredit />
+        </div>
       </div>
 
       <ScrollProgress />
@@ -454,9 +464,7 @@ function Brand() {
           <span className="brand-sub mt-[3px] block text-[10px] font-extrabold uppercase leading-none tracking-[0.09em] sm:text-[11.5px]">
             Tajweed Engine
           </span>
-          <span className="mt-1.5 block text-[9.5px] leading-none text-muted sm:text-[10px]">
-            {t.t('nav.tagline')}
-          </span>
+          <Tagline className="mt-1.5 block text-[9.5px] leading-none sm:text-[10px]" />
         </span>
       </span>
     );
@@ -469,13 +477,13 @@ function Brand() {
           missing file and gives nothing back for an asset this small. */}
       <img
         ref={imgRef}
-        src="/rahmah-logo.png"
+        src="/rahmah-logo-transparent.png"
         alt={t.t('nav.brand')}
         width={517}
         height={157}
         decoding="async"
         onError={() => setFailed(true)}
-        className="h-[44px] w-auto rounded-md sm:h-[52px]"
+        className="h-[44px] w-auto sm:h-[52px]"
       />
       {/* Shown at every width now: with the three destinations moved to the
           bottom bar, the masthead finally has room for it on a phone.
@@ -487,9 +495,61 @@ function Brand() {
           size reaches the same width with the words still touching: the lockup
           is ~3.3 : 1, so 52px of height is ~172px across, which 12.5px of this
           face fills almost exactly. */}
-      <span className="mt-1.5 block text-[10.5px] leading-none text-muted sm:text-[12.5px]">
-        {t.t('nav.tagline')}
-      </span>
+      <Tagline className="mt-1.5 block text-[10.5px] leading-none sm:text-[12.5px]" />
+    </span>
+  );
+}
+
+/**
+ * The tagline, with its second half set in the anchor colours.
+ *
+ * The masthead then does the thing the app claims to do, on the two words that
+ * claim it. The palette is the reader's own — madd, ghunnah, qalqalah,
+ * makharij, accent — cycled per character. `silent` is left out on purpose:
+ * it is grey, which at this size would read as a gap in the word rather than
+ * as a colour.
+ *
+ * WHY GRAPHEMES, NOT CHARACTERS
+ * -----------------------------
+ * Tamil and Sinhala write this phrase with combining marks — `சொ` is three
+ * code points, `වර්` is four. Splitting on code points would tear a mark off
+ * its base and paint the two halves different colours, which in those scripts
+ * is not a stylistic choice but a broken word. `Intl.Segmenter` groups by
+ * grapheme cluster, so a base and everything that hangs off it stay one unit
+ * and take one colour. The `Array.from` fallback splits by code point, which
+ * is wrong for those scripts but only reachable on engines that predate the
+ * Segmenter — and it is still better than throwing.
+ */
+const ANCHORS = ['text-madd', 'text-ghunnah', 'text-qalqalah', 'text-makharij', 'text-accent'];
+
+function graphemes(s: string): string[] {
+  if (typeof Intl !== 'undefined' && 'Segmenter' in Intl) {
+    const seg = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
+    return Array.from(seg.segment(s), (g) => g.segment);
+  }
+  return Array.from(s);
+}
+
+function Tagline({ className }: { className?: string }) {
+  const t = useT();
+  const lead = t.t('nav.taglineLead');
+  const accent = t.t('nav.taglineAccent');
+
+  let i = 0;
+  return (
+    <span className={className}>
+      <span className="text-muted">{lead} </span>
+      {graphemes(accent).map((g, n) => {
+        // Spaces take no colour, and must not advance the cycle either — an
+        // invisible step would break the run of colours either side of them.
+        if (g.trim() === '') return <span key={n}>{g}</span>;
+        const cls = ANCHORS[i++ % ANCHORS.length];
+        return (
+          <span key={n} className={`${cls} font-semibold`}>
+            {g}
+          </span>
+        );
+      })}
     </span>
   );
 }

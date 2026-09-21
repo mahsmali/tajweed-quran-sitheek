@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next';
 import { Nav } from '@/components/Nav';
 import { MicAvailabilityNotice } from '@/components/MicAvailabilityNotice';
 import { SiteFooter } from '@/components/SiteFooter';
-import { CreditRail } from '@/components/CreditRail';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -46,9 +45,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-dvh antialiased">
         <Nav />
-        {/* Outside `main` on purpose: it is fixed to the viewport's left
-            margin, not part of any page's content column. */}
-        <CreditRail />
         {/* Wider than the old 6xl: at 1440px and up the reader was a column of
             panels down the middle with a third of the window left empty on
             either side, which is also what left no room for the controls rail

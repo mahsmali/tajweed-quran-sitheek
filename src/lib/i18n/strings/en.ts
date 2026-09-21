@@ -2,7 +2,11 @@
 export const en = {
   nav: {
     brand: 'Tajweed Engine',
-    tagline: 'Word-by-word, colour-coded',
+    // Split so the second half can be set in the five anchor colours — the
+    // masthead then demonstrates the thing the app does. Every locale needs
+    // both halves; the comma belongs to the lead.
+    taglineLead: 'Word-by-word,',
+    taglineAccent: 'colour-coded',
     reader: 'Reader',
     curriculum: '30-Day Roadmap',
     quiz: 'Find the Rule',

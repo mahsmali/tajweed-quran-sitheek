@@ -1,6 +1,6 @@
 'use client';
 
-import { Favicon } from '@/components/CreditRail';
+import { Favicon } from '@/components/BrandCredit';
 import { useT } from '@/lib/i18n/useT';
 
 /**
@@ -12,11 +12,11 @@ const STUDIO_URL = 'https://fslabsco.com/';
 /**
  * The provenance notice that closes every page.
  *
- * The build credit is NOT here — it lives in the left margin as `CreditRail`,
- * which the layout mounts. What this component keeps is the fallback: below
- * `min-[1392px]` there is no margin for a rail, so the same credit is set as an
- * ordinary line under the notice. The two visibility rules are exact
- * complements, so the credit appears once and only once at every width.
+ * The build credit is NOT here — it lives under the masthead controls as
+ * `MastheadCredit`. What this component keeps is the fallback: below `sm` the
+ * masthead has no room, so the same credit is set as an ordinary line under
+ * the notice. The two visibility rules are exact complements, so the credit
+ * appears once and only once at every width.
  */
 export function SiteFooter() {
   const t = useT();
@@ -46,10 +46,11 @@ export function SiteFooter() {
           </div>
         </div>
 
-        {/* The rail's name, horizontally, for the widths that have no rail.
-            No mark on it — the one beside the notice above is already this
-            block's mark, and repeating it would set the favicon twice. */}
-        <p className="mt-4 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted min-[1392px]:hidden">
+        {/* Below `sm` the masthead has no room for `MastheadCredit`, so the
+            credit appears here instead. No mark on it — the one beside the
+            notice above is already this block's mark, and repeating it would
+            set the favicon twice on one screen. */}
+        <p className="mt-4 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted sm:hidden">
           {t.t('footer.credit')}
         </p>
       </div>
