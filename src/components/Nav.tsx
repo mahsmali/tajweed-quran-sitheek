@@ -405,27 +405,25 @@ function GlobeIcon() {
  *
  * SIZING
  * ------
- * `public/rahmah-logo.png` is a wide lockup (517 x 157, about 3.3 : 1) that
- * already contains the words "Rahmah Tajweed Engine", so it replaces the dots
- * AND the wordmark that used to sit beside them — keeping both would have set
- * the brand name twice. It is pinned by HEIGHT and left to work out its own
- * width: 30px on a phone, 34px from `sm` up, which is about 99px and 112px
- * across.
+ * A wide lockup that already contains the words "Rahmah Tajweed Engine", so it
+ * replaces the dots AND the wordmark that used to sit beside them — keeping
+ * both would have set the brand name twice. It is pinned by HEIGHT and left to
+ * work out its own width: 44px on a phone, 52px from `sm` up, which is about
+ * 158px and 187px across.
  *
- * THE BLACK FIELD
- * ---------------
- * The artwork has no transparency — it is drawn on a solid black canvas. On the
- * dark theme that vanishes into the surface, but on the cream one it is a hard
- * black rectangle in the corner of the page. Keying the black out is not an
- * option (the monogram's own tower and outlines are near-black too, so a colour
- * key punches holes straight through the artwork), so the canvas is rounded to
- * soften what the file already is.
+ * ONE LOCKUP PER THEME
+ * --------------------
+ * Two files, because one cannot do both jobs. "Tajweed Engine" is set in a
+ * metallic gradient, and a gradient that reads on black is close to invisible
+ * on cream — which is exactly what happened when the dark artwork was keyed
+ * transparent and shown on the light theme. So the dark theme keeps the
+ * original, and the light theme uses the artwork drawn for it, with that line
+ * in dark metal.
  *
- * The hairline that used to trace those corners is gone by request. It was
- * doing real work on the cream theme — drawing the edge deliberately rather
- * than letting it read as an accident — so if the black rectangle ever starts
- * to look wrong in light mode, `ring-1 ring-line` is what to put back. A
- * transparent PNG would settle it properly; see `public/README.md`.
+ * Both arrive on an opaque canvas — black and white respectively — and both are
+ * keyed and trimmed by `scripts/key-logo-background.ps1`. The originals are
+ * kept beside them as sources. See `public/README.md` for why the key is a
+ * border flood fill and not a colour key.
  *
  * FALLBACK
  * --------
@@ -437,6 +435,7 @@ function Brand() {
   const t = useT();
   const [failed, setFailed] = useState(false);
   const imgRef = useRef<HTMLImageElement | null>(null);
+  const lightRef = useRef<HTMLImageElement | null>(null);
 
   /**
    * `onError` alone is not enough here.
@@ -447,10 +446,14 @@ function Brand() {
    * false, and the header keeps a broken image forever. Re-checking the decoded
    * state once on mount catches exactly that case: an image that has finished
    * loading with no intrinsic width did not load at all.
+   *
+   * Both files are checked. Either one missing drops the whole lockup to the
+   * type fallback — a theme that silently shows a broken image is worse than a
+   * wordmark in both.
    */
   useEffect(() => {
-    const el = imgRef.current;
-    if (el?.complete && el.naturalWidth === 0) setFailed(true);
+    const dead = (el: HTMLImageElement | null) => el?.complete && el.naturalWidth === 0;
+    if (dead(imgRef.current) || dead(lightRef.current)) setFailed(true);
   }, []);
 
   if (failed) {
@@ -472,6 +475,19 @@ function Brand() {
 
   return (
     <span className="flex flex-col items-start leading-none">
+      {/* Two files, one per theme, swapped in CSS rather than in JS — the
+          theme class is on <html> before React hydrates, so a JS swap would
+          flash the wrong lockup on first paint. Both are in the DOM and both
+          load; `hidden` does not stop a fetch. That doubled cost is why the
+          light file is downscaled to 600px rather than shipped at the 1956px
+          it was delivered at — 1.5MB on every page load, for something drawn
+          at 187px, to show half the time.
+
+          Both files are TRIMMED TO CONTENT (see scripts/key-logo-background.ps1
+          -Trim), which is what lets a single height class size them the same:
+          3.58 : 1 and 3.62 : 1 after trimming, so 52px of height is ~186px and
+          ~188px across. Untrimmed they padded their artwork differently and the
+          same box rendered two visibly different logos. */}
       {/* eslint-disable-next-line @next/next/no-img-element -- a fixed-height
           brand lockup with a runtime fallback; next/image would hard-error on a
           missing file and gives nothing back for an asset this small. */}
@@ -479,11 +495,22 @@ function Brand() {
         ref={imgRef}
         src="/rahmah-logo-transparent.png"
         alt={t.t('nav.brand')}
-        width={517}
-        height={157}
+        width={508}
+        height={142}
         decoding="async"
         onError={() => setFailed(true)}
-        className="h-[44px] w-auto sm:h-[52px]"
+        className="hidden h-[44px] w-auto sm:h-[52px] dark:block"
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element -- see above */}
+      <img
+        ref={lightRef}
+        src="/rahmah-logo-light.png"
+        alt={t.t('nav.brand')}
+        width={600}
+        height={166}
+        decoding="async"
+        onError={() => setFailed(true)}
+        className="block h-[44px] w-auto sm:h-[52px] dark:hidden"
       />
       {/* Shown at every width now: with the three destinations moved to the
           bottom bar, the masthead finally has room for it on a phone.
@@ -492,10 +519,10 @@ function Brand() {
           it. `text-align-last: justify` does stretch a single line, but it can
           only do so by opening the word spaces, and on a two-word tagline that
           is one conspicuous hole in the middle rather than a set line. Type
-          size reaches the same width with the words still touching: the lockup
-          is ~3.3 : 1, so 52px of height is ~172px across, which 12.5px of this
-          face fills almost exactly. */}
-      <Tagline className="mt-1.5 block text-[10.5px] leading-none sm:text-[12.5px]" />
+          size reaches the same width with the words still touching: trimmed,
+          the lockup is ~3.6 : 1, so 52px of height is ~187px across, which
+          13.5px of this face fills almost exactly. */}
+      <Tagline className="mt-1.5 block text-[11.5px] leading-none sm:text-[13.5px]" />
     </span>
   );
 }
